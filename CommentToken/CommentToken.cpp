@@ -1,5 +1,9 @@
-CommentToken::CommentToken()
+#include "CommentToken.h"
+
+CommentToken::CommentToken(const std::string& value)
 {
+    this->strRepresentation = value;
+    this->content = value;
 }
 
 CommentToken::CommentToken(const CommentToken& src)
@@ -19,7 +23,12 @@ CommentToken& CommentToken::operator=(const CommentToken& rhs)
  	return (*this);
 }
 
-TokenType CommentToken::getType() const
+eTokenType CommentToken::getType() const
 {
-    return TokenType::Comment;
+    return eTokenType::Comment;
+}
+
+std::string CommentToken::getContent() const
+{
+    return this->content;
 }

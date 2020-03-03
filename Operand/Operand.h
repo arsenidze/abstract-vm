@@ -21,12 +21,11 @@ public:
 	IOperand const* operator/(IOperand const& rhs) const override;
 	IOperand const* operator%(IOperand const& rhs) const override;
 	std::string	const& toString(void) const override;
+	bool isZero() const;
 private:
 	eOperandType type;
 	std::string value;
 	uOperandTypeStorage	operandTypeStorage;
-
-	uOperandTypeStorage	getOperandTypeStorage() const;
 };
 
 #endif

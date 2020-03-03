@@ -15,8 +15,11 @@ union uOperandTypeStorage
 
 	static uOperandTypeStorage	create(eOperandType interpretationType, std::string const& value);
 	static uOperandTypeStorage	sum(uOperandTypeStorage op1, uOperandTypeStorage op2, eOperandType interpretationType);
+	static uOperandTypeStorage	sub(uOperandTypeStorage op1, uOperandTypeStorage op2, eOperandType interpretationType);
+	static uOperandTypeStorage	mul(uOperandTypeStorage op1, uOperandTypeStorage op2, eOperandType interpretationType);
+	static uOperandTypeStorage	div(uOperandTypeStorage op1, uOperandTypeStorage op2, eOperandType interpretationType);
+	static uOperandTypeStorage	mod(uOperandTypeStorage op1, uOperandTypeStorage op2, eOperandType interpretationType);
 	std::string	toString(eOperandType interpretationType) const;
-
 };
 
 #endif

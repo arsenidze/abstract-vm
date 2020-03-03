@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Evaluator.h"
 #include "EvaluationStructure/EvaluationStructure.h"
+#include "Operand/Operand.h"
 
 Evaluator::Evaluator()
 	: isExit(false)
@@ -75,18 +76,20 @@ bool Evaluator::getIsExit() const
 	return this->isExit;
 }
 
-void	Evaluator::push(std::shared_ptr<IOperand> value)
+void	Evaluator::push(const IOperand* value)
 {
 	this->stack.push(value);
 }
 
-std::shared_ptr<IOperand>	Evaluator::pop()
+const IOperand*	Evaluator::pop()
 {
 	if (this->stack.empty())
 	{
 		throw std::exception();
 	}
-	return this->stack.pop();
+	const IOperand * t = this->stack.top();
+	this->stack.pop();
+	return t;
 }
 
 void	Evaluator::dump()
@@ -97,10 +100,10 @@ void	Evaluator::dump()
 	}
 }
 
-void	Evaluator::assert(std::shared_ptr<IOperand> value)
+void	Evaluator::assert(const IOperand* value)
 {
 	// TODO: comparison in IOperand
-	if (this->stack.top() != value)
+	if (this->stack.top()->toString() != value->toString())
 	{
 		throw std::exception();
 	}
@@ -111,7 +114,7 @@ void	Evaluator::add()
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	auto res = op2 + op1;
+	auto res = *op2 + *op1;
 	this->push(res);
 }
 
@@ -120,7 +123,7 @@ void	Evaluator::sub()
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	auto res = op2 - op1;
+	auto res = *op2 - *op1;
 	this->push(res);
 }
 
@@ -129,7 +132,7 @@ void	Evaluator::mul()
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	auto res = op2 * op1;
+	auto res = *op2 * *op1;
 	this->push(res);
 }
 
@@ -138,12 +141,12 @@ void	Evaluator::div()
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	if (op1->isZero())
+	if ((static_cast<Operand *>(const_cast<IOperand* >(op1)))->isZero())
 	{
 		throw std::exception();
 	}
 
-	auto res = op2 / op1;
+	auto res = *op2 / *op1;
 	this->push(res);
 }
 
@@ -152,12 +155,12 @@ void	Evaluator::mod()
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	if (op1->isZero())
+	if ((static_cast<Operand*>(const_cast<IOperand*>(op1)))->isZero())
 	{
 		throw std::exception();
 	}
 
-	auto res = op2 % op1;
+	auto res = *op2 % *op1;
 	this->push(res);
 }
 

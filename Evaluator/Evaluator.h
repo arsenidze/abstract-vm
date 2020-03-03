@@ -1,7 +1,6 @@
 #ifndef EVALUATOR_H
 # define EVALUATOR_H
 
-#include <memory>
 #include "IAST/IAST.h"
 #include "IterableStack/IterableStack.h"
 #include "IOperand/IOperand.h"
@@ -16,13 +15,13 @@ public:
 	void	evaluate(std::shared_ptr<IAST> ast);
 	bool	getIsExit() const;
 private:
-	IterableStack<std::shared_ptr<IOperand>>	stack;
+	IterableStack<const IOperand *>	stack;
 	bool	isExit;
 
-	void	push(std::shared_ptr<IOperand> value);
-	std::shared_ptr<IOperand>	pop();
+	void	push(const IOperand * value);
+	const IOperand* pop();
 	void	dump();
-	void	assert(std::shared_ptr<IOperand> value);
+	void	assert(const IOperand* value);
 	void	add();
 	void	sub();
 	void	mul();

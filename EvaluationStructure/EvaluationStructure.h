@@ -11,13 +11,13 @@ struct EvaluationStructure : public IAST
 {
 public:
 	EvaluationStructure();
-	EvaluationStructure(eInstruction instruction, std::shared_ptr<IOperand> value, std::string comment);
+	EvaluationStructure(eInstruction instruction, const IOperand * value, std::string comment);
 //	EvaluationStructure(const EvaluationStructure& src);
 //	~EvaluationStructure();
 //	EvaluationStructure& operator=(const EvaluationStructure& rhs);
 //private:
 	eInstruction				instruction;
-	std::shared_ptr<IOperand>	value;
+	const IOperand*					value;
 	std::string					comment;
 
 	bool isEmpty() const;

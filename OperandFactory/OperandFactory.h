@@ -13,13 +13,13 @@ public:
 	OperandFactory& operator=(const OperandFactory& rhs);
 	static IOperand const* createOperand(eOperandType type, std::string const& value);
 private:
-	IOperand const* createInt8(std::string const& value) const;
-	IOperand const* createInt16(std::string const& value) const;
-	IOperand const* createInt32(std::string const& value) const;
-	IOperand const* createFloat(std::string const& value) const;
-	IOperand const* createDouble(std::string const& value) const;
+	static IOperand const* createInt8(std::string const& value);
+	static IOperand const* createInt16(std::string const& value);
+	static IOperand const* createInt32(std::string const& value);
+	static IOperand const* createFloat(std::string const& value);
+	static IOperand const* createDouble(std::string const& value);
 
-	static constexpr IOperand const* (OperandFactory::*functionMap[5])(std::string const& value) const=
+	static constexpr IOperand const* (*functionMap[])(std::string const& value) =
 	{
 		&OperandFactory::createInt8,
 		&OperandFactory::createInt16,

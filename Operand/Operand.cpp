@@ -1,10 +1,8 @@
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include "Operand.h"
 #include "OperandFactory/OperandFactory.h"
-
-Operand::Operand()
-{
-}
 
 Operand::Operand(eOperandType type, std::string const& value)
 {
@@ -42,55 +40,55 @@ eOperandType	Operand::getType(void) const
 
 IOperand const* Operand::operator+(IOperand const& rhs) const
 {
-    eOperandType generalType = static_cast<eOperandType>(std::max(static_cast<int>(this->getPrecision()), static_cast<int>(rhs.getPrecision())));
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
 
-    auto op1 = this->getOperandTypeStorage();
-    auto op2 = this->getOperandTypeStorage();
-    auto value = uOperandTypeStorage::sum(op1, op2, generalType).toString();
+    auto op1 = this->operandTypeStorage;
+    auto op2 = dynamic_cast<const Operand&>(rhs).operandTypeStorage;
+    auto value = uOperandTypeStorage::sum(op1, op2, generalType).toString(generalType);
 
     return OperandFactory::createOperand(generalType, value);
 }
 
 IOperand const* Operand::operator-(IOperand const& rhs) const
 {
-    eOperandType generalType = static_cast<eOperandType>(std::max(static_cast<int>(this->getPrecision()), static_cast<int>(rhs.getPrecision())));
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
 
-    auto op1 = this->getOperandTypeStorage();
-    auto op2 = this->getOperandTypeStorage();
-    auto value = uOperandTypeStorage::sub(op1, op2, generalType).toString();
+    auto op1 = this->operandTypeStorage;
+    auto op2 = dynamic_cast<const Operand&>(rhs).operandTypeStorage;
+    auto value = uOperandTypeStorage::sub(op1, op2, generalType).toString(generalType);
 
     return OperandFactory::createOperand(generalType, value);
 }
 
 IOperand const* Operand::operator*(IOperand const& rhs) const
 {
-    eOperandType generalType = static_cast<eOperandType>(std::max(static_cast<int>(this->getPrecision()), static_cast<int>(rhs.getPrecision())));
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
 
-    auto op1 = this->getOperandTypeStorage();
-    auto op2 = this->getOperandTypeStorage();
-    auto value = uOperandTypeStorage::mul(op1, op2, generalType).toString();
+    auto op1 = this->operandTypeStorage;
+    auto op2 = dynamic_cast<const Operand&>(rhs).operandTypeStorage;
+    auto value = uOperandTypeStorage::mul(op1, op2, generalType).toString(generalType);
 
     return OperandFactory::createOperand(generalType, value);
 }
 
 IOperand const* Operand::operator/(IOperand const& rhs) const
 {
-    eOperandType generalType = static_cast<eOperandType>(std::max(static_cast<int>(this->getPrecision()), static_cast<int>(rhs.getPrecision())));
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
 
-    auto op1 = this->getOperandTypeStorage();
-    auto op2 = this->getOperandTypeStorage();
-    auto value = uOperandTypeStorage::div(op1, op2, generalType).toString();
+    auto op1 = this->operandTypeStorage;
+    auto op2 = dynamic_cast<const Operand&>(rhs).operandTypeStorage;
+    auto value = uOperandTypeStorage::div(op1, op2, generalType).toString(generalType);
 
     return OperandFactory::createOperand(generalType, value);
 }
 
 IOperand const* Operand::operator%(IOperand const& rhs) const
 {
-    eOperandType generalType = static_cast<eOperandType>(std::max(static_cast<int>(this->getPrecision()), static_cast<int>(rhs.getPrecision())));
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
 
-    auto op1 = this->getOperandTypeStorage();
-    auto op2 = this->getOperandTypeStorage();
-    auto value = uOperandTypeStorage::mod(op1, op2, generalType).toString();
+    auto op1 = this->operandTypeStorage;
+    auto op2 = dynamic_cast<const Operand&>(rhs).operandTypeStorage;
+    auto value = uOperandTypeStorage::mod(op1, op2, generalType).toString(generalType);
 
     return OperandFactory::createOperand(generalType, value);
 }
@@ -98,4 +96,20 @@ IOperand const* Operand::operator%(IOperand const& rhs) const
 std::string	const& Operand::toString(void) const
 {
     return this->value;
+}
+
+bool Operand::isZero() const
+{
+    switch (this->type)
+    {
+    case eOperandType::Int8:
+    case eOperandType::Int16:
+    case eOperandType::Int32:
+        return this->operandTypeStorage.i32 == 0;
+    case eOperandType::Float:
+    case eOperandType::Double:
+        return std::abs(this->operandTypeStorage.d - (int)this->operandTypeStorage.d) < std::numeric_limits<double>::lowest();
+    default:
+        return false;
+    }
 }

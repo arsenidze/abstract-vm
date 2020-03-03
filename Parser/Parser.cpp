@@ -37,14 +37,14 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
     std::shared_ptr<EvaluationStructure>    res = std::make_shared<EvaluationStructure>();
 
     int offsetIfComment = 0;
-    if (tokens.back()->getType() == TokenType::Comment)
+    if (tokens.back()->getType() == eTokenType::Comment)
     {
         auto commentToken = std::static_pointer_cast<CommentToken>(tokens[0]);
         res->comment = commentToken->getContent();
         offsetIfComment = 1;
     }
 
-    if (tokens[0]->getType() != TokenType::Instruction)
+    if (tokens[0]->getType() != eTokenType::Instruction)
     {
         throw std::exception();
     }
@@ -61,10 +61,10 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
         res->instruction = instructionToken->getContent();
     }
     else if ((tokens.size() == (2 - offsetIfComment)) && 
-        (tokens[1]->getType() == TokenType::Value))
+        (tokens[1]->getType() == eTokenType::Value))
     {
-        if (!(instructionToken->getContent() == eInstruction::Push) ||
-            (instructionToken->getContent() == eInstruction::Assert))
+        if (!((instructionToken->getContent() == eInstruction::Push) ||
+            (instructionToken->getContent() == eInstruction::Assert)))
         {
             throw std::exception();
         }
@@ -75,7 +75,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
     }
     else
     {
-        if (res->isEmpty)
+        if (res->isEmpty())
         {
             throw std::exception();
         }

@@ -1,13 +1,13 @@
 #ifndef ITOKEN_H
 # define ITOKEN_H
 
-#include "TokenType/TokenType.h"
+#include "eTokenType/eTokenType.h"
 
 class IToken
 {
 public:
 	virtual ~IToken() {}
-	virtual TokenType getType() const = 0;
+	virtual eTokenType getType() const = 0;
 private:
 };
 

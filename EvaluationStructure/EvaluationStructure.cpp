@@ -1,5 +1,4 @@
 #include "EvaluationStructure.h"
-#include "EvaluationStructure.h"
 
 EvaluationStructure::EvaluationStructure()
 {
@@ -8,29 +7,29 @@ EvaluationStructure::EvaluationStructure()
     this->comment = "";
 }
 
-EvaluationStructure::EvaluationStructure(eInstruction instruction, std::shared_ptr<IOperand> value, std::string comment)
+EvaluationStructure::EvaluationStructure(eInstruction instruction, const IOperand * value, std::string comment)
 {
     this->instruction = instruction;
     this->value = std::move(value);
     this->comment = std::move(comment);
 }
 
-EvaluationStructure::EvaluationStructure(const EvaluationStructure& src)
-{
-	*this = src;
-}
-
-EvaluationStructure::~EvaluationStructure()
-{
-}
-
-EvaluationStructure& EvaluationStructure::operator=(const EvaluationStructure& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
+//EvaluationStructure::EvaluationStructure(const EvaluationStructure& src)
+//{
+//	*this = src;
+//}
+//
+//EvaluationStructure::~EvaluationStructure()
+//{
+//}
+//
+//EvaluationStructure& EvaluationStructure::operator=(const EvaluationStructure& rhs)
+//{
+//	if (this == &rhs)
+//  		return (*this);
+// 	// ADD CODE
+// 	return (*this);
+//}
 
 bool EvaluationStructure::isEmpty() const
 {

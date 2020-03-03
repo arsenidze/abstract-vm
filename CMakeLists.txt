@@ -7,31 +7,41 @@ project ("abstract-vm")
 
 set(SRCS 
 	abstract-vm.cpp
-	Reader/Reader.cpp
-	Lexer/Lexer.cpp
-	InstructionToken/InstructionToken.cpp
-	ValueToken/ValueToken.cpp
 	CommentToken/CommentToken.cpp
-	Parser/Parser.cpp
 	EvaluationStructure/EvaluationStructure.cpp
+	Evaluator/Evaluator.cpp
+	InstructionToken/InstructionToken.cpp
+	Lexer/Lexer.cpp
+	Operand/Operand.cpp
 	OperandFactory/OperandFactory.cpp
+	Parser/Parser.cpp
+	Reader/Reader.cpp
+	TokenFactory/TokenFactory.cpp
+	uOperandTypeStorage/uOperandTypeStorage.cpp
+	ValueToken/ValueToken.cpp
 )
 
 set(HEADERS
 	abstract-vm.h
-	Reader/Reader.h
-	Lexer/Lexer.h
-	IToken/IToken.h
-	InstructionToken/InstructionToken.h
-	ValueToken/ValueToken.h
 	CommentToken/CommentToken.h
-	Parser/Parser.h
 	eInstruction/eInstruction.h
-	IOperand/IOperand.h
-	EvaluationStructure/EvaluationStructure.h
-	IterableStack/IterableStack.h
 	eOperandType/eOperandType.h
+	eTokenType/eTokenType.h
+	EvaluationStructure/EvaluationStructure.h
+	Evaluator/Evaluator.h
+	IAST/IAST.h
+	InstructionToken/InstructionToken.h
+	IOperand/IOperand.h
+	IterableStack/IterableStack.h
+	IToken/IToken.h
+	Lexer/Lexer.h
+	Operand/Operand.h
 	OperandFactory/OperandFactory.h
+	Parser/Parser.h
+	Reader/Reader.h
+	TokenFactory/TokenFactory.h
+	uOperandTypeStorage/uOperandTypeStorage.h
+	ValueToken/ValueToken.h
 )
 
 # Add source to this project's executable.

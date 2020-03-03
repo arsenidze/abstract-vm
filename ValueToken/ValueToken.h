@@ -1,6 +1,7 @@
 #ifndef VALUETOKEN_H
 # define VALUETOKEN_H
 
+#include <string>
 #include <memory>
 #include "IToken/IToken.h"
 #include "IOperand/IOperand.h"
@@ -8,13 +9,15 @@
 class ValueToken : public IToken
 {
 public:
-	ValueToken();
+	ValueToken(const std::string& value);
 	ValueToken(const ValueToken& src);
 	~ValueToken();
 	ValueToken& operator=(const ValueToken& rhs);
-	TokenType getType() const override;
-	std::shared_ptr<IOperand> getContent() const;
+	eTokenType getType() const override;
+	const IOperand * getContent() const;
 private:
+	std::string strRepresentation;
+	const IOperand* content;
 };
 
 #endif
