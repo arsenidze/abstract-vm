@@ -54,23 +54,6 @@ InstructionToken::InstructionToken(const std::string& value)
 
 }
 
-InstructionToken::InstructionToken(const InstructionToken& src)
-{
-	*this = src;
-}
-
-InstructionToken::~InstructionToken()
-{
-}
-
-InstructionToken& InstructionToken::operator=(const InstructionToken& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
-
 eTokenType InstructionToken::getType() const
 {
     return eTokenType::Instruction;

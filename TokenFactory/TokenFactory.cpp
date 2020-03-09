@@ -1,46 +1,22 @@
-#include <utility>
-
 #include "TokenFactory.h"
-#include "InstructionToken/InstructionToken.h"
-#include "ValueToken/ValueToken.h"
-#include "CommentToken/CommentToken.h"
 
-TokenFactory::TokenFactory()
-{
-}
+#include <stdexcept>
 
-TokenFactory::TokenFactory(const TokenFactory& src)
-{
-	*this = src;
-}
-
-TokenFactory::~TokenFactory()
-{
-}
-
-TokenFactory& TokenFactory::operator=(const TokenFactory& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
+#include "Tokens/InstructionToken/InstructionToken.h"
+#include "Tokens/ValueToken/ValueToken.h"
+#include "Tokens/CommentToken/CommentToken.h"
 
 std::shared_ptr<IToken> TokenFactory::createToken(eTokenType type, const std::string& content)
 {
 	switch (type)
 	{
     case Instruction:
-        return std::make_shared<InstructionToken>(std::move(content));
-        break;
+        return std::make_shared<InstructionToken>(content);
     case Value:
-        return std::make_shared<ValueToken>(std::move(content));
-        break;
+        return std::make_shared<ValueToken>(content);
     case Comment:
-        return std::make_shared<CommentToken>(std::move(content));
-        break;
+        return std::make_shared<CommentToken>(content);
     default:
-        return nullptr;
-        break;
+        throw std::logic_error("Unknown type of token");
 	}
 }

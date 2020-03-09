@@ -3,7 +3,7 @@
 
 struct IAST
 {
-
+	virtual ~IAST() {}
 };
 
 #endif

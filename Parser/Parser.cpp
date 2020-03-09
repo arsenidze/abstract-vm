@@ -1,52 +1,37 @@
 #include "Parser.h"
+
 #include "EvaluationStructure/EvaluationStructure.h"
-#include "CommentToken/CommentToken.h"
-#include "InstructionToken/InstructionToken.h"
-#include "ValueToken/ValueToken.h"
+#include "Exceptions/SyntaxErrorException/SyntaxErrorException.h"
+#include "Tokens/CommentToken/CommentToken.h"
+#include "Tokens/InstructionToken/InstructionToken.h"
+#include "Tokens/ValueToken/ValueToken.h"
 
 const size_t Parser::MAX_NUMBER_OF_TOKENS_IN_SENTECE = 3;
-
-Parser::Parser()
-{
-}
-
-Parser::Parser(const Parser& src)
-{
-	*this = src;
-}
-
-Parser::~Parser()
-{
-}
-
-Parser& Parser::operator=(const Parser& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
 
 std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
 {
     if (tokens.size() > this->MAX_NUMBER_OF_TOKENS_IN_SENTECE)
     {
-        throw std::exception();
+        throw SyntaxErrorException();
     }
-
+	
     std::shared_ptr<EvaluationStructure>    res = std::make_shared<EvaluationStructure>();
 
-    int offsetIfComment = 0;
+    int8_t offsetIfComment = 0;
     if (tokens.back()->getType() == eTokenType::Comment)
     {
         auto commentToken = std::static_pointer_cast<CommentToken>(tokens[0]);
         res->comment = commentToken->getContent();
+    	if (tokens.size() == 1)
+    	{
+            return res;
+    	}
         offsetIfComment = 1;
     }
 
     if (tokens[0]->getType() != eTokenType::Instruction)
     {
-        throw std::exception();
+        throw SyntaxErrorException();
     }
 
     auto instructionToken = std::static_pointer_cast<InstructionToken>(tokens[0]);
@@ -56,7 +41,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
         if ((instructionToken->getContent() == eInstruction::Push) ||
             (instructionToken->getContent() == eInstruction::Assert))
         {
-            throw std::exception();
+            throw SyntaxErrorException();
         }
         res->instruction = instructionToken->getContent();
     }
@@ -66,7 +51,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
         if (!((instructionToken->getContent() == eInstruction::Push) ||
             (instructionToken->getContent() == eInstruction::Assert)))
         {
-            throw std::exception();
+            throw SyntaxErrorException();
         }
         res->instruction = instructionToken->getContent();
 
@@ -77,7 +62,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
     {
         if (res->isEmpty())
         {
-            throw std::exception();
+            throw SyntaxErrorException();
         }
     }
     

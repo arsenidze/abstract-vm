@@ -1,18 +1,22 @@
 #ifndef TOKENFACTORY_H
 # define TOKENFACTORY_H
 
-#include <string>
 #include <memory>
-#include "IToken/IToken.h"
+#include <string>
+
 #include "eTokenType/eTokenType.h"
+#include "Tokens/IToken/IToken.h"
 
 class TokenFactory
 {
 public:
-	TokenFactory();
-	TokenFactory(const TokenFactory& src);
-	~TokenFactory();
-	TokenFactory& operator=(const TokenFactory& rhs);
+    TokenFactory() = delete;
+    TokenFactory(const TokenFactory& src) = delete;
+    ~TokenFactory() = delete;
+    TokenFactory& operator=(const TokenFactory & rhs) = delete;
+    TokenFactory(TokenFactory&&) = delete;
+    TokenFactory& operator=(TokenFactory&&) = delete;
+	
 	static std::shared_ptr<IToken> createToken(eTokenType type, const std::string& content);
 private:
 };

@@ -1,50 +1,65 @@
-
 #include "Reader.h"
 
+#include <iostream>
+
+const std::string Reader::STDIN_END_STRING = ";;";
+
 Reader::Reader()
+    : isEOR(false)
 {
 
 }
 
-Reader::Reader(const std::string fileName)
+bool Reader::open(eInputType inputType = eInputType::StandardInput, const std::string& fileName)
 {
-    this->file.open(fileName, std::ifstream::in);
+    this->inputType = inputType;
+	if (this->inputType == eInputType::File)
+	{
+        this->file.open(fileName, std::ifstream::in);
+        return this->file.is_open();
+	}
+    return true;
 }
 
-Reader::Reader(const Reader& src)
+bool Reader::getLine(std::string& line_in)
 {
-	*this = src;
-}
-
-Reader::~Reader()
-{
-    this->file.close();
-}
-
-Reader& Reader::operator=(const Reader& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
-
-bool Reader::open(std::string fileName)
-{
-    this->file.open(fileName, std::ifstream::in);
-    return this->file.is_open();
-}
-
-std::string Reader::getLine()
-{
-    if (!this->file)
+	if (this->isEOR)
+	{
+        return false;
+	}
+	
+	switch (this->inputType)
     {
-        return "";
-    }
-    if (!std::getline(this->file, this->line))
-    {
-        this->line = "";
-    }
+    case eInputType::File:
+        if (!std::getline(this->file, this->line))
+        {
+            this->isEOR = true;
+            return false;
+        }
+        break;
+    case eInputType::StandardInput:
+        if (!std::getline(std::cin, this->line))
+        {
+            this->isEOR = true;
+            return false;
+        }
+        if (this->line == this->STDIN_END_STRING)
+        {
+            this->isEOR = true;
+        }
+        break;
+	}
 
-    return this->line;
+    line_in = this->line;
+    return true;
+}
+
+bool Reader::isEndOfReading() const
+{
+    return this->isEOR;
+}
+
+eInputType Reader::getInputType() const
+{
+    return this->inputType;
 }

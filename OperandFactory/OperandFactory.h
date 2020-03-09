@@ -7,10 +7,12 @@
 class OperandFactory
 {
 public:
-	OperandFactory();
-	OperandFactory(const OperandFactory& src);
-	~OperandFactory();
-	OperandFactory& operator=(const OperandFactory& rhs);
+	OperandFactory() = delete;
+    OperandFactory(const OperandFactory& src) = delete;
+    ~OperandFactory() = delete;
+    OperandFactory& operator=(const OperandFactory& rhs) = delete;
+    OperandFactory(OperandFactory&&) = delete;
+    OperandFactory& operator=(OperandFactory&&) = delete;
 	static IOperand const* createOperand(eOperandType type, std::string const& value);
 private:
 	static IOperand const* createInt8(std::string const& value);

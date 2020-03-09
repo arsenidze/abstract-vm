@@ -45,9 +45,13 @@ create_module_implementation() {
 	local module_name=${1}
 	local file_name=${module_name}.cpp
 
+	local double_quote='"'
+
 	touch ${file_name}
 	echo \
-"${module_name}::${module_name}()
+"#include ${double_quote}${module_name}.h${double_quote}
+
+${module_name}::${module_name}()
 {
 }
 
@@ -78,7 +82,7 @@ main() {
 
 	local module_name=${argv[1]}
 
-	mkdir ${src_dir}/${module_name}
+	mkdir -p ${src_dir}/${module_name}
 	cd ${src_dir}/${module_name}
 	create_module_interface ${module_name}
 	create_module_implementation ${module_name}

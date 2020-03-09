@@ -1,6 +1,13 @@
-#include <iostream>
 #include "Evaluator.h"
+
+#include <iostream>
+
 #include "EvaluationStructure/EvaluationStructure.h"
+#include "Exceptions/FalseAssertException/FalseAssertException.h"
+#include "Exceptions/InstructionOnEmptyStackException/InstructionOnEmptyStackException.h"
+#include "Exceptions/NoExitException/NoExitException.h"
+#include "Exceptions/NotEnoughOperandsException/NotEnoughOperandsException.h"
+#include "Exceptions/UnknownInstructionException/UnknownInstructionException.h"
 #include "Operand/Operand.h"
 
 Evaluator::Evaluator()
@@ -8,26 +15,9 @@ Evaluator::Evaluator()
 {
 }
 
-Evaluator::Evaluator(const Evaluator& src)
+void Evaluator::evaluate(const std::shared_ptr<IAST>& ast)
 {
-	*this = src;
-}
-
-Evaluator::~Evaluator()
-{
-}
-
-Evaluator& Evaluator::operator=(const Evaluator& rhs)
-{
-	if (this == &rhs)
-  		return (*this);
- 	// ADD CODE
- 	return (*this);
-}
-
-void Evaluator::evaluate(std::shared_ptr<IAST> ast)
-{
-    auto evaluationStructure = std::static_pointer_cast<EvaluationStructure>(ast);
+	const auto evaluationStructure = std::static_pointer_cast<EvaluationStructure>(ast);
 
     switch (evaluationStructure->instruction)
     {
@@ -67,13 +57,21 @@ void Evaluator::evaluate(std::shared_ptr<IAST> ast)
 		case eInstruction::None:
 			break;
 		default:
-			break;
+			throw UnknownInstructionException();
     }
 }
 
 bool Evaluator::getIsExit() const
 {
 	return this->isExit;
+}
+
+void Evaluator::exitCheck() const
+{
+	if (!this->isExit)
+	{
+		throw NoExitException();
+	}
 }
 
 void	Evaluator::push(const IOperand* value)
@@ -85,7 +83,7 @@ const IOperand*	Evaluator::pop()
 {
 	if (this->stack.empty())
 	{
-		throw std::exception();
+		throw InstructionOnEmptyStackException();
 	}
 	const IOperand * t = this->stack.top();
 	this->stack.pop();
@@ -94,79 +92,118 @@ const IOperand*	Evaluator::pop()
 
 void	Evaluator::dump()
 {
-	for (auto elem: this->stack)
+	for (auto it = this->stack.rbegin(); it != this->stack.rend(); ++it)
 	{
-		std::cout << elem << std::endl;
+		std::cout << (*it)->toString() << std::endl;
 	}
 }
 
 void	Evaluator::assert(const IOperand* value)
 {
-	// TODO: comparison in IOperand
 	if (this->stack.top()->toString() != value->toString())
 	{
-		throw std::exception();
+		throw FalseAssertException();
 	}
 }
 
-void	Evaluator::add()
+void    Evaluator::add()
 {
+	if (this->stack.size() < 2)
+	{
+		throw NotEnoughOperandsException();
+	}
+
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
 	auto res = *op2 + *op1;
 	this->push(res);
+
+	delete op1;
+	delete op2;
 }
 
-void	Evaluator::sub()
+void    Evaluator::sub()
 {
+	if (this->stack.size() < 2)
+	{
+		throw NotEnoughOperandsException();
+	}
+
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
 	auto res = *op2 - *op1;
 	this->push(res);
+
+	delete op1;
+	delete op2;
 }
 
-void	Evaluator::mul()
+void    Evaluator::mul()
 {
+	if (this->stack.size() < 2)
+	{
+		throw NotEnoughOperandsException();
+	}
+
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
 	auto res = *op2 * *op1;
 	this->push(res);
+
+	delete op1;
+	delete op2;
 }
 
-void	Evaluator::div()
+void    Evaluator::div()
 {
+	if (this->stack.size() < 2)
+	{
+		throw NotEnoughOperandsException();
+	}
+
 	auto op1 = this->pop();
 	auto op2 = this->pop();
-
-	if ((static_cast<Operand *>(const_cast<IOperand* >(op1)))->isZero())
-	{
-		throw std::exception();
-	}
 
 	auto res = *op2 / *op1;
 	this->push(res);
+
+	delete op1;
+	delete op2;
 }
 
-void	Evaluator::mod()
+void    Evaluator::mod()
 {
+	if (this->stack.size() < 2)
+	{
+		throw NotEnoughOperandsException();
+	}
+
 	auto op1 = this->pop();
 	auto op2 = this->pop();
 
-	if ((static_cast<Operand*>(const_cast<IOperand*>(op1)))->isZero())
-	{
-		throw std::exception();
-	}
-
 	auto res = *op2 % *op1;
 	this->push(res);
+
+	delete op1;
+	delete op2;
 }
 
 void	Evaluator::print()
 {
+	const auto t = this->stack.top();
+	
+	if (t->getType() != eOperandType::Int8)
+	{
+		throw FalseAssertException();
+	}
 
+	const auto int8Bit = static_cast<int8_t>(stoi(t->toString()));
+	const auto c = static_cast<char>(int8Bit);
+	
+	std::cout << c << std::endl;
 }
 
 void	Evaluator::exit()

@@ -1,26 +1,27 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-#include <vector>
 #include <memory>
-#include <utility>
 #include <regex>
-#include "IToken/IToken.h"
+#include <utility>
+#include <vector>
+
+#include "Tokens/IToken/IToken.h"
 
 class Lexer
 {
 public:
-	Lexer();
-	Lexer(const Lexer& src);
-	~Lexer();
-	Lexer& operator=(const Lexer& rhs);
-	std::vector<std::shared_ptr<IToken>> getTokens(std::string line) const;
+	Lexer() = default;
+    Lexer(const Lexer& src) = delete;
+    ~Lexer() = default;
+    Lexer& operator=(const Lexer & rhs) = delete;
+    Lexer(Lexer&&) = delete;
+    Lexer& operator=(Lexer&&) = delete;
+	
+	std::vector<std::shared_ptr<IToken>> getTokens(const std::string& line) const;
 private:
-	std::shared_ptr<IToken> mapWordToToken(const std::string& word) const;
-	bool	isOptimizationCheckSayStop(size_t numOfLexems, std::shared_ptr<IToken> lastToken) const;
+	std::shared_ptr<IToken> mapLexemeToToken(const std::string& word) const;
 	static const std::pair<std::regex, eTokenType> tokenMap[];
-
-	static const size_t MAX_NUMBER_OF_TOKENS_IN_SENTECE;
 };
 
 #endif

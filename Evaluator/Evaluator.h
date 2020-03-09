@@ -1,19 +1,25 @@
 #ifndef EVALUATOR_H
 # define EVALUATOR_H
 
+#include <memory>
+
 #include "IAST/IAST.h"
-#include "IterableStack/IterableStack.h"
 #include "IOperand/IOperand.h"
+#include "IterableStack/IterableStack.hpp"
 
 class Evaluator
 {
 public:
 	Evaluator();
-	Evaluator(const Evaluator& src);
-	~Evaluator();
-	Evaluator& operator=(const Evaluator& rhs);
-	void	evaluate(std::shared_ptr<IAST> ast);
+	Evaluator(const Evaluator& src) = delete;
+	~Evaluator() = default;
+	Evaluator& operator=(const Evaluator& rhs) = delete;
+	Evaluator(Evaluator&&) = delete;
+	Evaluator& operator=(Evaluator&&) = delete;
+	
+	void	evaluate(const std::shared_ptr<IAST>& ast);
 	bool	getIsExit() const;
+	void	exitCheck() const;
 private:
 	IterableStack<const IOperand *>	stack;
 	bool	isExit;

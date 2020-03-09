@@ -10,4 +10,7 @@ public:
 
     auto begin() const { return std::begin(c); }
     auto end() const { return std::end(c); }
+
+    auto rbegin() const { return std::rbegin(c); }
+    auto rend() const { return std::rend(c); }
 };

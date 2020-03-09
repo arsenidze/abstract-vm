@@ -2,6 +2,7 @@
 # define IOPERAND_H
 
 #include <string>
+
 #include "eOperandType/eOperandType.h"
 
 class IOperand
