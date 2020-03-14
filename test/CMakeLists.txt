@@ -34,7 +34,8 @@ endif()
 
 set(SRCS 
 	main.cpp
-    LexerTests.cpp)
+    LexerTests.cpp
+    ParserTests.cpp)
 
 add_executable(test_abstract_vm ${SRCS})
 

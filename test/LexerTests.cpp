@@ -58,7 +58,6 @@ TEST_P(LexerGetTokensTests, GetTokens) {
 
 constexpr auto token = TokenFactory::createToken;
 using tokens = std::vector<std::shared_ptr<IToken>>;
-constexpr auto operand = OperandFactory::createOperand;
 
 INSTANTIATE_TEST_CASE_P(
     UnitTestsLexer,
@@ -76,7 +75,11 @@ INSTANTIATE_TEST_CASE_P(
         std::make_tuple("print", tokens(1, token(Instruction, "print"))),
         std::make_tuple("exit", tokens(1, token(Instruction, "exit"))),
 
-        std::make_tuple("push int8(1)", tokens({ token(Instruction, "push"), token(Value, "int8(1)") }))
+        std::make_tuple("push int8(1)", tokens({ token(Instruction, "push"), token(Value, "int8(1)") })),
+        std::make_tuple("push int16(1)", tokens({ token(Instruction, "push"), token(Value, "int16(1)") })),
+        std::make_tuple("push int32(1)", tokens({ token(Instruction, "push"), token(Value, "int32(1)") })),
+        std::make_tuple("push float(1.1)", tokens({ token(Instruction, "push"), token(Value, "float(1.1)") })),
+        std::make_tuple("push double(1.1)", tokens({ token(Instruction, "push"), token(Value, "double(1.1)") }))
         //std::make_tuple("push ", tokens(1, token(Instruction, "push")))
     ));
 
@@ -102,5 +105,11 @@ INSTANTIATE_TEST_CASE_P(
     UnitTestsLexer,
     LexerGetTokensThrowTests,
     ::testing::Values(
-        std::make_tuple("push ", std::make_exception_ptr(std::exception("")))
+        std::make_tuple("push ", std::make_exception_ptr(std::exception(""))),
+        std::make_tuple("push int32(1", std::make_exception_ptr(std::exception(""))),
+        std::make_tuple("push int32(1.1)", std::make_exception_ptr(std::exception(""))),
+        std::make_tuple("push int8()", std::make_exception_ptr(std::exception(""))),
+        std::make_tuple("push float()", std::make_exception_ptr(std::exception(""))),
+
+        std::make_tuple("", std::make_exception_ptr(std::exception("")))
     ));

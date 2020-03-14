@@ -11,12 +11,12 @@ struct EvaluationStructure : public IAST
 {
 	EvaluationStructure();
 	EvaluationStructure(eInstruction instruction, const IOperand * value, std::string comment);
+	bool operator ==(const EvaluationStructure& other) const;
 	bool isEmpty() const;
 
 	eInstruction				instruction;
 	const IOperand*				value;
 	std::string					comment;
-
 };
 
 #endif

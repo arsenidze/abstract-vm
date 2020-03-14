@@ -14,6 +14,11 @@ enum eInstruction
 	Mod,
 	Print,
 	Exit,
+	
+	Sort,
+	Sumall,
+	Dumpex,
+
 	None
 };
 

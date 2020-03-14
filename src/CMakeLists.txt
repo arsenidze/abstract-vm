@@ -30,6 +30,8 @@ set(SRCS
 	Exceptions/ValueOverflowException/ValueOverflowException.cpp
 	Exceptions/ValueUnderflowException/ValueUnderflowException.cpp
 	Exceptions/InvalidValueException/InvalidValueException.cpp
+	Exceptions/InstructionsAfterExitException/InstructionsAfterExitException.cpp
+	Util/Conversion/Conversion.cpp
 )
 
 set(HEADERS
@@ -63,11 +65,15 @@ set(HEADERS
 	Exceptions/ValueOverflowException/ValueOverflowException.h
 	Exceptions/ValueUnderflowException/ValueUnderflowException.h
 	Exceptions/InvalidValueException/InvalidValueException.h
+	Exceptions/InstructionsAfterExitException/InstructionsAfterExitException.h
+	Util/Conversion/Conversion.h
 )
 
 # Add source to this project's executable.
 add_executable (abstract-vm ${SRCS} ${HEADERS})
 target_include_directories(abstract-vm PRIVATE ".")
+
+target_compile_features(abstract-vm PRIVATE cxx_std_17)
 
 install(TARGETS abstract-vm DESTINATION bin)
 
@@ -79,8 +85,14 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/input.txt
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/input1.txt
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/input2.txt
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
 add_library(libabstract_vm STATIC ${SRCS} ${HEADERS})
 
 target_include_directories(libabstract_vm PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_compile_features(libabstract_vm PRIVATE cxx_std_17)

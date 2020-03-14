@@ -24,6 +24,11 @@ public:
 	IOperand const* operator/(IOperand const& rhs) const override;
 	IOperand const* operator%(IOperand const& rhs) const override;
 	std::string	const& toString(void) const override;
+
+	bool operator ==(const Operand& rhs) const;
+	bool operator ==(const IOperand& rhs) const override;
+	bool operator <(const Operand& rhs) const;
+	bool operator <(const IOperand& rhs) const override;
 private:
 	eOperandType type;
 	std::string value;

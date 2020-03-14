@@ -4,6 +4,7 @@
 
 #include "Exceptions/InvalidValueException/InvalidValueException.h"
 #include "OperandFactory/OperandFactory.h"
+#include "Util/Conversion/Conversion.h"
 
 ValueToken::ValueToken(const std::string& value)
 {
@@ -24,7 +25,7 @@ ValueToken::ValueToken(const std::string& value)
         throw InvalidValueException();
 	}
 
-    this->content = OperandFactory::createOperand(strToOperandType(m.str(1)), m.str(2));
+    this->content = OperandFactory::createOperand(Util::Conversion::strToOperandType(m.str(1)), m.str(2));
 }
 
 eTokenType ValueToken::getType() const
@@ -35,29 +36,4 @@ eTokenType ValueToken::getType() const
 const IOperand* ValueToken::getContent() const
 {
 	return this->content;
-}
-
-eOperandType ValueToken::strToOperandType(const std::string& value) const
-{
-    if (value == "int8")
-    {
-        return eOperandType::Int8;
-    }
-    else if (value == "int16")
-    {
-        return eOperandType::Int16;
-    }
-    else if (value == "int32")
-    {
-        return eOperandType::Int32;
-    }
-    else if (value == "float")
-    {
-        return eOperandType::Float;
-    }
-    else if (value == "double")
-    {
-        return eOperandType::Double;
-    }
-    throw std::logic_error("Unknown type of operand");
 }

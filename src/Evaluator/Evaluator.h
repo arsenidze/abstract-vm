@@ -1,7 +1,9 @@
 #ifndef EVALUATOR_H
 # define EVALUATOR_H
 
+#include <iostream>
 #include <memory>
+#include <sstream>
 
 #include "IAST/IAST.h"
 #include "IOperand/IOperand.h"
@@ -10,7 +12,7 @@
 class Evaluator
 {
 public:
-	Evaluator();
+	Evaluator(std::ostream& output = std::cout);
 	Evaluator(const Evaluator& src) = delete;
 	~Evaluator() = default;
 	Evaluator& operator=(const Evaluator& rhs) = delete;
@@ -22,7 +24,8 @@ public:
 	void	exitCheck() const;
 private:
 	IterableStack<const IOperand *>	stack;
-	bool	isExit;
+	bool							isExit;
+	std::ostream&					output;
 
 	void	push(const IOperand * value);
 	const IOperand* pop();
@@ -35,6 +38,10 @@ private:
 	void	mod();
 	void	print();
 	void	exit();
+
+	void	sort();
+	void	sumall();
+	void	dumpex();
 };
 
 #endif

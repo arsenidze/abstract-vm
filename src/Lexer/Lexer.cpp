@@ -8,7 +8,7 @@
 
 const std::pair<std::regex, eTokenType> Lexer::tokenMap[] =
 {
-    {std::regex("^(push|pop|dump|assert|add|sub|mul|div|mod|print|exit)$"), eTokenType::Instruction},
+    {std::regex("^(push|pop|dump|assert|add|sub|mul|div|mod|print|exit|sort|sumall|dumpex)$"), eTokenType::Instruction},
     {std::regex("^(int8|int16|int32)\\([-]?[0-9]+\\)$"), eTokenType::Value},
     {std::regex("^(float|double)\\([-]?[0-9]+.[0-9]+\\)$"), eTokenType::Value},
     {std::regex("^;(.*)$"), eTokenType::Comment}
@@ -16,6 +16,11 @@ const std::pair<std::regex, eTokenType> Lexer::tokenMap[] =
 
 std::vector<std::shared_ptr<IToken>> Lexer::getTokens(const std::string& line) const
 {
+	if (line.empty())
+	{
+        throw LexicalErrorException();
+	}
+	
     std::vector<std::shared_ptr<IToken>> tokens;
     std::regex  re("^(\\w+)?([ ]{1}([\\w().-]+))?([ ]*(;.+))?$");
     std::smatch m;
@@ -59,5 +64,5 @@ std::shared_ptr<IToken> Lexer::mapLexemeToToken(const std::string &word) const
         }
     }
 
-    throw UnknownInstructionException(); // Unknown lexeme
+    throw LexicalErrorException(); // Unknown lexeme
 }

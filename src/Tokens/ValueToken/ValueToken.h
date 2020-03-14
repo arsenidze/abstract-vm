@@ -21,7 +21,6 @@ public:
 private:
 	std::string strRepresentation;
 	const IOperand* content;
-	eOperandType strToOperandType(const std::string& value) const;
 };
 
 #endif

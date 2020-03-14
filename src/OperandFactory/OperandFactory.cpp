@@ -9,7 +9,7 @@
 
 IOperand const* OperandFactory::createOperand(eOperandType type, std::string const& value)
 {
-    return OperandFactory::functionMap[type](value);
+	return OperandFactory::functionMap[type](value);
 }
 
 IOperand const* OperandFactory::createInt8(std::string const& value)
@@ -17,10 +17,16 @@ IOperand const* OperandFactory::createInt8(std::string const& value)
 	try
 	{
         auto t = std::stoi(value);
+		if (t > std::numeric_limits<int8_t>::max() ||
+			t < std::numeric_limits<int8_t>::min())
+		{
+			throw ValueOverflowException();
+		}
 	}
 	catch (std::out_of_range&)
 	{
-        throw ValueOverflowException();
+        //throw ValueOverflowException();
+		throw std::logic_error("12312");
 	}
 	catch (std::invalid_argument&)
 	{
@@ -35,6 +41,11 @@ IOperand const* OperandFactory::createInt16(std::string const& value)
 	try
 	{
 		auto t = std::stoi(value);
+		if (t > std::numeric_limits<int16_t>::max() || 
+			t < std::numeric_limits<int16_t>::min())
+		{
+			throw ValueOverflowException();
+		}
 	}
 	catch (std::out_of_range&)
 	{

@@ -449,10 +449,107 @@ std::string const& Operand::toString(void) const
     return this->value;
 }
 
+bool Operand::operator==(const Operand& rhs) const
+{
+    return ((this->getType() == rhs.getType()) &&
+        (this->toString() == rhs.toString()));
+}
+
+bool Operand::operator==(const IOperand& rhs) const
+{
+    auto t = dynamic_cast<const Operand&>(rhs);
+
+    return Operand::operator==(t);
+}
+
+bool Operand::operator<(const Operand& rhs) const
+{
+    eOperandType generalType = static_cast<eOperandType>(std::max(this->getPrecision(), rhs.getPrecision()));
+
+    auto op1Str = this->value;
+    auto op2Str = rhs.toString();
+
+    bool res;
+    try
+    {
+        switch (generalType)
+        {
+        case Int8:
+        {
+            auto op1Int8 = static_cast<int8_t>(std::stoi(op1Str));
+            auto op2Int8 = static_cast<int8_t>(std::stoi(op2Str));
+
+            res = op1Int8 < op2Int8;
+        }
+        break;
+        case Int16:
+        {
+            auto op1Int16 = static_cast<int16_t>(std::stoi(op1Str));
+            auto op2Int16 = static_cast<int16_t>(std::stoi(op2Str));
+
+            res = op1Int16 < op2Int16;
+        }
+        break;
+        case Int32:
+        {
+            auto op1Int32 = static_cast<int32_t>(std::stoi(op1Str));
+            auto op2Int32 = static_cast<int32_t>(std::stoi(op2Str));
+
+            res = op1Int32 < op2Int32;
+        }
+        break;
+        case Float:
+        {
+            auto op1Float = static_cast<float>(std::stof(op1Str));
+            auto op2Float = static_cast<float>(std::stof(op2Str));
+
+            res = op1Float < op2Float;
+        }
+        break;
+        case Double:
+        {
+            auto op1Double = static_cast<double>(std::stod(op1Str));
+            auto op2Double = static_cast<double>(std::stod(op2Str));
+
+            res = op1Double < op2Double;
+        }
+        break;
+        default:
+            throw std::logic_error("Unknown type of operand");
+        }
+    }
+    catch (std::overflow_error&)
+    {
+        throw ValueOverflowException();
+    }
+    catch (std::underflow_error&)
+    {
+        throw ValueUnderflowException();
+    }
+    catch (std::out_of_range&)
+    {
+        throw ValueOverflowException();
+    }
+    catch (std::invalid_argument&)
+    {
+        throw InvalidValueException();
+    }
+
+    return res;
+}
+
+bool Operand::operator<(const IOperand& rhs) const
+{
+    auto t = dynamic_cast<const Operand&>(rhs);
+
+    return Operand::operator<(t);
+}
+
 bool Operand::isZero() const
 {
     int32_t i;
-    double d;
+    float   f;
+    double  d;
     switch (this->type)
     {
     case eOperandType::Int8:
@@ -461,9 +558,11 @@ bool Operand::isZero() const
         i = static_cast<int32_t>(std::stoi(this->value));
         return i == 0;
     case eOperandType::Float:
+        f = static_cast<float>(std::stof(this->value));
+        return std::abs(f - static_cast<int>(f)) < std::numeric_limits<float>::min();
     case eOperandType::Double:
         d = static_cast<double>(std::stod(this->value));
-        return std::abs(d - static_cast<int>(d)) < std::numeric_limits<double>::lowest();
+        return std::abs(d - static_cast<int>(d)) < std::numeric_limits<double>::min();
     default:
         throw std::logic_error("Unknown type of operand");
     }
@@ -594,6 +693,12 @@ T Operand::safeFractionDiv(T op1, T op2) const
     if (fetestexcept(FE_UNDERFLOW))
     {
         throw ValueUnderflowException();
+    }
+
+	// Additional check on div by zero
+    if (fetestexcept(FE_DIVBYZERO))
+    {
+        throw DivisionByZeroException();
     }
 
     return  res;

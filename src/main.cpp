@@ -1,67 +1,181 @@
 ﻿#include <iostream>
 #include <string>
+#include <thread>
+#include <sstream>
 
 #include "Evaluator/Evaluator.h"
+#include "Exceptions/DivisionByZeroException/DivisionByZeroException.h"
+#include "Exceptions/FalseAssertException/FalseAssertException.h"
+#include "Exceptions/InstructionOnEmptyStackException/InstructionOnEmptyStackException.h"
+#include "Exceptions/InstructionsAfterExitException/InstructionsAfterExitException.h"
+#include "Exceptions/InvalidValueException/InvalidValueException.h"
+#include "Exceptions/LexicalErrorException/LexicalErrorException.h"
+#include "Exceptions/ModuloByZeroException/ModuloByZeroException.h"
 #include "Exceptions/NoExitException/NoExitException.h"
+#include "Exceptions/NotEnoughOperandsException/NotEnoughOperandsException.h"
+#include "Exceptions/SyntaxErrorException/SyntaxErrorException.h"
+#include "Exceptions/UnknownInstructionException/UnknownInstructionException.h"
+#include "Exceptions/ValueOverflowException/ValueOverflowException.h"
+#include "Exceptions/ValueUnderflowException/ValueUnderflowException.h"
 #include "Lexer/Lexer.h"
 #include "Parser/Parser.h"
 #include "Reader/Reader.h"
 
-const std::string FILE_NAME = "input.txt";
+static std::string formOutputErrorMessage(const std::string& line, size_t lineNumber, const std::string& description, const std::string& type = "Error")
+{
+	if (!line.empty())
+	{
+		return "Line " + std::to_string(lineNumber) + " : " + type + " : " + "'" + line + "'" + " : " + description;
+	}
+	return "Line " + std::to_string(lineNumber) + " : " + type + " : " + description;
+}
 
-int main(int argc, const char *argv[])
+void abstract_vm(eInputType type = eInputType::StandardInput, const char * fileName = "", std::ostream& output = std::cout)
 {
 	std::string	line;
 	Reader		reader;
 	Lexer		lexer;
 	Parser		parser;
-	Evaluator	evaluator;
+	Evaluator	evaluator(output);
 
-	if (argc == 1)
+	if (!reader.open(type, fileName))
 	{
-		reader.open(eInputType::StandardInput);
-	}
-	else if (argc == 2)
-	{
-		reader.open(eInputType::File, argv[1]);
-	}
-	else
-	{
-		std::cerr << std::string(argv[0]) + std::string(": Too many arguments") << std::endl;
+		output << "Error: Can't open file" << std::endl;
+		return;
 	}
 
-	while (reader.getLine(line))
+	std::vector<std::string>	errorList;
+	for (size_t numOfLines = 1; reader.getLine(line); numOfLines++)
 	{
 		if (line.empty())
 		{
 			continue;
 		}
-		
+
 		try
 		{
 			const auto tokens = lexer.getTokens(line);
 			const auto ast = parser.parse(tokens);
-			evaluator.evaluate(ast);
+			
+			if (errorList.empty())
+			{
+				evaluator.evaluate(ast);
+			}
+		}
+		catch (const DivisionByZeroException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const FalseAssertException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const InstructionOnEmptyStackException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const InstructionsAfterExitException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const InvalidValueException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const LexicalErrorException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const ModuloByZeroException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const NotEnoughOperandsException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const SyntaxErrorException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const UnknownInstructionException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const ValueOverflowException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
+		}
+		catch (const ValueUnderflowException & ex)
+		{
+			errorList.emplace_back(formOutputErrorMessage(line, numOfLines, ex.what()));
 		}
 		catch (const std::exception& ex)
 		{
-			std::cout << ex.what() << std::endl;
+			output << "Unexpected error: " << ex.what() << std::endl;
+			return;
 		}
+	}
+
+	if (!errorList.empty())
+	{
+		for (const auto& error : errorList)
+		{
+			output << error << std::endl;
+		}
+		return;
 	}
 	
 	try
 	{
-		if (reader.getInputType() == eInputType::File)
-		{
-			evaluator.exitCheck();
-		}
+		evaluator.exitCheck();
 	}
-	catch (NoExitException& ex)
+	catch (const NoExitException & ex)
 	{
-		std::cout << ex.what() << std::endl;
+		output << std::string("Error: ") + ex.what() << std::endl;
 	}
-	
-	system("pause");
-	return 0;
 }
 
+int main(const int argc, const char *argv[])
+{
+	if (argc == 1)
+	{
+		abstract_vm(eInputType::StandardInput);
+	}
+	else if (argc == 2 && (std::string(argv[1]) == "--help"))
+	{
+		std::cout << std::string("Usage: ") + std::string(argv[0]) + std::string(" <input file1> <input file2> ... <input fileN>") << std::endl;
+	}
+	else
+	{
+		std::vector<std::thread>	threads;
+		std::vector<std::string>	outputStrs(argc - 1, "");
+		
+		for (int i = 1; i < argc; ++i)
+		{
+			auto singleThread = [](const char * fileName, std::string& outputStr) -> void
+			{
+				std::ostringstream output;
+				
+				output << std::string(fileName) + std::string(":") << std::endl << std::endl;
+				abstract_vm(eInputType::File, fileName, output);
+				output << std::string(80, '-') << std::endl << std::endl;
+
+				outputStr = output.str();
+			};
+			
+			threads.emplace_back(std::thread(singleThread, argv[i], std::ref(outputStrs[i - 1])));
+		}
+
+		for (size_t i = 0; i < threads.size(); i++)
+		{
+			if (threads[i].joinable())
+			{
+				threads[i].join();
+				std::cout << outputStrs[i] << std::endl;
+			}
+		}
+	}
+	
+	return 0;
+}

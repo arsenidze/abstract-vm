@@ -1,0 +1,12 @@
+sumall
+push int8(3)
+push int8(3)
+push int8(3)
+push int32(-43)
+push float(8.4)
+dump
+sort
+dump
+sumall
+dump
+exit

@@ -10,7 +10,7 @@ const size_t Parser::MAX_NUMBER_OF_TOKENS_IN_SENTECE = 3;
 
 std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
 {
-    if (tokens.size() > this->MAX_NUMBER_OF_TOKENS_IN_SENTECE)
+    if (tokens.size() > this->MAX_NUMBER_OF_TOKENS_IN_SENTECE || tokens.size() == 0)
     {
         throw SyntaxErrorException();
     }
@@ -20,7 +20,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
     int8_t offsetIfComment = 0;
     if (tokens.back()->getType() == eTokenType::Comment)
     {
-        auto commentToken = std::static_pointer_cast<CommentToken>(tokens[0]);
+        auto commentToken = std::static_pointer_cast<CommentToken>(tokens.back());
         res->comment = commentToken->getContent();
     	if (tokens.size() == 1)
     	{
@@ -36,7 +36,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
 
     auto instructionToken = std::static_pointer_cast<InstructionToken>(tokens[0]);
 
-    if (tokens.size() == (1 - offsetIfComment))
+    if (tokens.size() == (offsetIfComment + 1))
     {
         if ((instructionToken->getContent() == eInstruction::Push) ||
             (instructionToken->getContent() == eInstruction::Assert))
@@ -45,7 +45,7 @@ std::shared_ptr<IAST> Parser::parse(std::vector<std::shared_ptr<IToken>> tokens)
         }
         res->instruction = instructionToken->getContent();
     }
-    else if ((tokens.size() == (2 - offsetIfComment)) && 
+    else if ((tokens.size() == (offsetIfComment + 2)) && 
         (tokens[1]->getType() == eTokenType::Value))
     {
         if (!((instructionToken->getContent() == eInstruction::Push) ||

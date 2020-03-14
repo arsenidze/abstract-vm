@@ -22,10 +22,12 @@ public:
 	eInputType	getInputType() const;
 private:
 	eInputType		inputType;
+	std::string		fileName;
 	std::ifstream	file;
 	std::string		line;
-	bool			isEOR{};
+	bool			isEOR;
 	static const	std::string STDIN_END_STRING;
+	bool			writeStdInToFile(const std::string& fileName, const std::string& stopString) const;
 };
 
 #endif

@@ -47,6 +47,18 @@ InstructionToken::InstructionToken(const std::string& value)
 	{
 		this->content = eInstruction::Exit;
 	}
+	else if (value == "sort")
+	{
+		this->content = eInstruction::Sort;
+	}
+	else if (value == "sumall")
+	{
+		this->content = eInstruction::Sumall;
+	}
+	else if (value == "dumpex")
+	{
+		this->content = eInstruction::Dumpex;
+	}
 	else
 	{
 		this->content = eInstruction::None;
